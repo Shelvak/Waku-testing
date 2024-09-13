@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "lib": ["es2020"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es2020",
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["mocha", "chai"]
+  }
+}
