@@ -1,60 +1,42 @@
-// import { Keypair } from "@solana/web3.js";
-import protobuf from "protobufjs";
-
 import {
-  createLightNode,
-  utf8ToBytes,
-  waitForRemotePeer,
-  createEncoder,
-  Protocols,
-} from "@waku/sdk";
+  HANDSHAKE_TOPIC,
+  sendMsg,
+  subscribeTo,
+  startNode,
+  randomTopic,
+} from './common'
 
-const CONTENT_TOPIC = "/coffer/0.1/test/proto";
 
-// const keypair = Keypair.generate();
-
-const Encoder = createEncoder({ contentTopic: CONTENT_TOPIC });
-// Protobuf bytes => Uint8Array (browser) or Buffer (node)
-// repeated indicates an array of bytes
-const ProofMessage = new protobuf.Type("ProofMessage")
-  .add(new protobuf.Field("timestamp", 1, "uint64"))
-  .add(new protobuf.Field("proofsArray", 2, "bytes", "repeated"));
-
+const sendProofs = async (node, topic, replyTo) => {
+  await sendMsg(node, topic, replyTo, "Proof", "asdasd", "qweqwe");
+}
 
 const main = async () => {
-  const node = await createLightNode({ defaultBootstrap: true });
+  const node = await startNode();
 
-  await node.start();
+  // Create a random topic to receive messages
+  const privTopic = randomTopic();
 
-  for ( let i = 0; i < 20; i++ )  {
-    try {
-      await waitForRemotePeer(node, [Protocols.LightPush], 2000);
-      if (node.isConnected())
-        break
-    } catch (e) {
-      console.log("Error waiting for remote peer " + i)
-      await new Promise((resolve) => setTimeout(resolve, 500));
+  await subscribeTo(node, privTopic, async (node, topic, msg) => {
+      switch (msg.state) {
+        case "ACK":
+          await sendProofs(node, msg.replyTo, topic);
+          break;
+        case "Sent":
+          console.log("TX sent... waiting for confirmation", msg.text[0])
+          break;
+        case "Error":
+          console.log("TX error", msg.text[0]) // build error
+          break;
+        default:
+          console.log("[handshake] unknown state: ", msg.state)
+          break;
+      }
     }
-  }
+  );
 
-  console.log("Connected =D")
-  console.log(node.libp2p.getPeers())
-
-  const protoMessage = ProofMessage.create({
-    timestamp: Date.now(),
-    proofsArray: [
-      utf8ToBytes("primera linea"),
-      utf8ToBytes("seg linea"),
-    ]
-  });
-
-  await node.lightPush.send(Encoder, {
-    payload: ProofMessage.encode(protoMessage).finish(),
-  });
-
-  console.log("Message sent!");
-
-  process.exit(0);
+  // Once the subscription is ready, we can start the dance
+  await sendMsg(node, HANDSHAKE_TOPIC, privTopic, "Handshake", "hi");
 };
 
 main().catch(console.error);
