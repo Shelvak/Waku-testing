@@ -4,7 +4,7 @@
   "dependencies": {
     "@solana/web3.js": "^1.95.3",
     "@waku/message-hash": "^0.1.16",
-    "@waku/sdk": "^0.0.28",
+    "@waku/sdk": "0.0.29-2fe9875.0",
     "protobufjs": "^7.4.0",
     "tsx": "^4.19.1"
   }

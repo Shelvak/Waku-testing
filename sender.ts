@@ -17,10 +17,17 @@ const main = async () => {
   // Create a random topic to receive messages
   const privTopic = randomTopic();
 
+  let ack = false;
+
   await subscribeTo(node, privTopic, async (node, topic, msg) => {
       switch (msg.state) {
         case "ACK":
-          await sendProofs(node, msg.replyTo, topic);
+          if (ack) { // already working with some other subscriber
+            await sendMsg(node, msg.replyTo, '', "Taken", "");
+          } else {
+            ack = true
+            await sendProofs(node, msg.replyTo, topic);
+          }
           break;
         case "Sent":
           console.log("TX sent... waiting for confirmation", msg.text[0])

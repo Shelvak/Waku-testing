@@ -663,16 +663,16 @@
   dependencies:
     "@types/node" "*"
 
-"@waku/core@0.0.32":
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/@waku/core/-/core-0.0.32.tgz#fa49d32ac55d8d530ea08aeb581e0d85c833e53a"
-  integrity sha512-dsG9ox7VpOsbflFnrfy96wBuk2f3KVaTGMv20T9iZeCr2Yil26xhu9IAyL8EvyIG4ip6VJFooBw7kQQ8Ck+wZA==
+"@waku/core@0.0.33-2fe9875.0":
+  version "0.0.33-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/core/-/core-0.0.33-2fe9875.0.tgz#8972a6bf6d782a5c5a67902fe9f978be155620ea"
+  integrity sha512-Wn7OCDjgW5eIoytFipB1D2FthcqjZvVJ7IckbK78uti1ySmYdBy6XgGpXbCvErAl/WXoVJ70mNVxQ7tOLj6GQg==
   dependencies:
     "@libp2p/ping" "^1.1.2"
-    "@waku/enr" "^0.0.26"
-    "@waku/interfaces" "0.0.27"
-    "@waku/proto" "0.0.8"
-    "@waku/utils" "0.0.20"
+    "@waku/enr" "0.0.27-2fe9875.0"
+    "@waku/interfaces" "0.0.28-2fe9875.0"
+    "@waku/proto" "0.0.9-2fe9875.0"
+    "@waku/utils" "0.0.21-2fe9875.0"
     debug "^4.3.4"
     it-all "^3.0.4"
     it-length-prefixed "^9.0.4"
@@ -681,32 +681,32 @@
     uint8arraylist "^2.4.3"
     uuid "^9.0.0"
 
-"@waku/discovery@0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@waku/discovery/-/discovery-0.0.5.tgz#ad837a8129fd07aec99e6ef5a40821e6f0621d95"
-  integrity sha512-GKR+7gu3g9NW9eG9J0oK8q1UIea+RL+8NfC/RLunfU5xj6BGuw+VuBW3CDnm6USYOxHHLGjA6OxHf/upOTpSlA==
+"@waku/discovery@0.0.6-2fe9875.0":
+  version "0.0.6-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/discovery/-/discovery-0.0.6-2fe9875.0.tgz#2d314c96e6d43856b0fa9963fb0a2287254edcda"
+  integrity sha512-m/Hyo3vm6asoR2wv/WUsBYcy4d4Lw6ZIwpytl4MMM3FvfkvAR4qcf7jYNbhfo31yQPlYg9Yeb/bWS3TUaPtyVw==
   dependencies:
-    "@waku/core" "0.0.32"
-    "@waku/enr" "0.0.26"
-    "@waku/interfaces" "0.0.27"
-    "@waku/proto" "^0.0.8"
-    "@waku/utils" "0.0.20"
+    "@waku/core" "0.0.33-2fe9875.0"
+    "@waku/enr" "0.0.27-2fe9875.0"
+    "@waku/interfaces" "0.0.28-2fe9875.0"
+    "@waku/proto" "0.0.9-2fe9875.0"
+    "@waku/utils" "0.0.21-2fe9875.0"
     debug "^4.3.4"
     dns-query "^0.11.2"
     hi-base32 "^0.5.1"
     uint8arrays "^5.0.1"
 
-"@waku/enr@0.0.26", "@waku/enr@^0.0.26":
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/@waku/enr/-/enr-0.0.26.tgz#8b0477493f3127285f7a276b5482979b5d32efb4"
-  integrity sha512-5JEEyAINiRv+BI9svY7UQrYU5xy/akGq3pDjbEeGPGOWga4BJ128RGpNz0tHHMnUXaHFoq+2DpQbT2oQXytXkw==
+"@waku/enr@0.0.27-2fe9875.0":
+  version "0.0.27-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/enr/-/enr-0.0.27-2fe9875.0.tgz#d46bd9bd67c3b81a0e948883e58cfb6c946cd871"
+  integrity sha512-zR3q4iOZBo2YHjPJcMXG/VRz284YPZGvr6FqBD4PJC/CaNDi4wckdASWXCwD2zM6XhfEAViWLULKepndm9kT6g==
   dependencies:
     "@ethersproject/rlp" "^5.7.0"
     "@libp2p/crypto" "^4.1.6"
     "@libp2p/peer-id" "^4.2.1"
     "@multiformats/multiaddr" "^12.0.0"
     "@noble/secp256k1" "^1.7.1"
-    "@waku/utils" "0.0.20"
+    "@waku/utils" "0.0.21-2fe9875.0"
     debug "^4.3.4"
     js-sha3 "^0.9.2"
 
@@ -717,7 +717,22 @@
   dependencies:
     "@waku/proto" "^0.0.8"
 
-"@waku/message-hash@0.1.16", "@waku/message-hash@^0.1.16":
+"@waku/interfaces@0.0.28-2fe9875.0":
+  version "0.0.28-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/interfaces/-/interfaces-0.0.28-2fe9875.0.tgz#9857ae125958d6e1981b285cef369f084548319c"
+  integrity sha512-x88+mP5oYRpck35lXVI6/v9eVBjHZTLKp/IA9NNKW1nMf3+KcuKefz8vVuGfZj5aOhcx0UuRoF5MRlR2UV1uiw==
+  dependencies:
+    "@waku/proto" "0.0.9-2fe9875.0"
+
+"@waku/message-hash@0.1.17-2fe9875.0":
+  version "0.1.17-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/message-hash/-/message-hash-0.1.17-2fe9875.0.tgz#6f6d8aa410f586dfc56f5395a1e01556a8f8442c"
+  integrity sha512-2GsXAgTjqGyo8zV6ZxuwQrbZsy/EAdRpbNX6LhG1ZapUQ5awP5fL77l6q1yyB8GTtZwqKHBygC/2O2ynSu35dw==
+  dependencies:
+    "@noble/hashes" "^1.3.2"
+    "@waku/utils" "0.0.21-2fe9875.0"
+
+"@waku/message-hash@^0.1.16":
   version "0.1.16"
   resolved "https://registry.yarnpkg.com/@waku/message-hash/-/message-hash-0.1.16.tgz#b1193c38abaf46f71a9afdab8be80e6974bb97e8"
   integrity sha512-Vwm4mWC3PSWf4YRjmfIR7SFzmps2JnF6ICbQJYGoTmLaS4AaxsbwrLmb747QMnpdfh9aemB0HbtM/cZEBrbWsA==
@@ -725,17 +740,24 @@
     "@noble/hashes" "^1.3.2"
     "@waku/utils" "0.0.20"
 
-"@waku/proto@0.0.8", "@waku/proto@^0.0.8":
+"@waku/proto@0.0.9-2fe9875.0":
+  version "0.0.9-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/proto/-/proto-0.0.9-2fe9875.0.tgz#0ed2febed554ce56620a4a79cb7362badb681da2"
+  integrity sha512-gsQbGB3S7K3FthqbHHfknG3cQUZgRUtAXdlTxWIUsNB/RwDLuMYR0S+1hpfek9BkylzzXBgVq+rgTgymzRqQPA==
+  dependencies:
+    protons-runtime "^5.4.0"
+
+"@waku/proto@^0.0.8":
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/@waku/proto/-/proto-0.0.8.tgz#acc122a11db36af6612ccaa22a657bf5976ff8e3"
   integrity sha512-RPq8XLZf1xoKXCFyGKfL0j2ySfMS6MNimBwhMHKM53kRlGnszP3wBZnjWBApBY7G1pIHvxzvUBpFQzYdHMhIQA==
   dependencies:
     protons-runtime "^5.4.0"
 
-"@waku/sdk@^0.0.28":
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/@waku/sdk/-/sdk-0.0.28.tgz#3b8d511442bd5027eb882fd1236addf38e169ae5"
-  integrity sha512-wiy8BB2Rg2yizlwM58RhWRkpuP8XjCXCmiVAsNqitHZw3L5LjdGDU9YZU105M0J61L7DMAtlRoRBXgJyPWNEfg==
+"@waku/sdk@0.0.29-2fe9875.0":
+  version "0.0.29-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/sdk/-/sdk-0.0.29-2fe9875.0.tgz#b4fdd347113ca87ef2130d2b728b54d4f1855d48"
+  integrity sha512-8WJ3FT6tvp1+Bvz+Ix2Fr3tG4sYQocHqq8FZMz5/pPhnCd2mWO0URXPZPuFIPlMpsND4VSgUeTg593C1RyIE2Q==
   dependencies:
     "@chainsafe/libp2p-noise" "^15.1.0"
     "@libp2p/bootstrap" "^10.1.2"
@@ -744,12 +766,12 @@
     "@libp2p/ping" "^1.1.2"
     "@libp2p/websockets" "^8.1.4"
     "@noble/hashes" "^1.3.3"
-    "@waku/core" "0.0.32"
-    "@waku/discovery" "0.0.5"
-    "@waku/interfaces" "0.0.27"
-    "@waku/message-hash" "0.1.16"
-    "@waku/proto" "^0.0.8"
-    "@waku/utils" "0.0.20"
+    "@waku/core" "0.0.33-2fe9875.0"
+    "@waku/discovery" "0.0.6-2fe9875.0"
+    "@waku/interfaces" "0.0.28-2fe9875.0"
+    "@waku/message-hash" "0.1.17-2fe9875.0"
+    "@waku/proto" "0.0.9-2fe9875.0"
+    "@waku/utils" "0.0.21-2fe9875.0"
     libp2p "^1.8.1"
 
 "@waku/utils@0.0.20":
@@ -759,6 +781,17 @@
   dependencies:
     "@noble/hashes" "^1.3.2"
     "@waku/interfaces" "0.0.27"
+    chai "^4.3.10"
+    debug "^4.3.4"
+    uint8arrays "^5.0.1"
+
+"@waku/utils@0.0.21-2fe9875.0":
+  version "0.0.21-2fe9875.0"
+  resolved "https://registry.yarnpkg.com/@waku/utils/-/utils-0.0.21-2fe9875.0.tgz#66cd3ce21c822d4156df16e43de68da2e86e5a14"
+  integrity sha512-9p+jsWXMeoNM/9sLfdbrpMKL54dNbX36SB5QolgHxFUuum+vJ+DRdI/07bPZzW/dXU1wHhmJv+NxnbH7UAJaYg==
+  dependencies:
+    "@noble/hashes" "^1.3.2"
+    "@waku/interfaces" "0.0.28-2fe9875.0"
     chai "^4.3.10"
     debug "^4.3.4"
     uint8arrays "^5.0.1"
