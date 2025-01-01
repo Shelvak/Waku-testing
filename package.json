@@ -2,10 +2,12 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@solana/web3.js": "^1.95.3",
+    "@solana/web3.js": "^1.98.0",
     "@waku/message-hash": "^0.1.16",
     "@waku/sdk": "0.0.29-2fe9875.0",
+    "bs58": "^6.0.0",
     "protobufjs": "^7.4.0",
-    "tsx": "^4.19.1"
+    "tsx": "^4.19.1",
+    "tweetnacl": "^1.0.3"
   }
 }
