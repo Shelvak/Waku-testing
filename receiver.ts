@@ -13,6 +13,7 @@ import bs58 from 'bs58';
 const main = async () => {
   const node = await startNode();
 
+  // Replace this for the solver key
   const keypair = Keypair.fromSecretKey( Uint8Array.from([
         8, 254, 227,   1,  69,  56, 110, 231, 145,  93, 168,
         131,  96, 182, 118, 246, 208, 128,  65, 136, 234, 144,
@@ -24,9 +25,9 @@ const main = async () => {
     )
   )
 
-  const signMessage = (message) => {
-      const messageBytes = new TextEncoder().encode(message);
-      const signature = nacl.sign.detached(messageBytes, keypair.secretKey);
+  const signBody = (body) => {
+      const bodyBytes = new TextEncoder().encode(JSON.stringify(body));
+      const signature = nacl.sign.detached(bodyBytes, keypair.secretKey);
 
       return bs58.encode(signature)
   }
@@ -34,7 +35,7 @@ const main = async () => {
   const flowFn = async (node, topic, msg) => {
     switch (msg.state) {
       case "Proof":
-        // armar el tx con msg.text[...]
+        // armar el tx con msg.body[...]
         // await sendMsg(node, msg.replyTo, topic, 'Sent', `TX sent: jhkjhkjhkjhkj`)
         // // Simulate confirmation...
         // await sleep(2000)
@@ -42,8 +43,8 @@ const main = async () => {
 
         try {
           const pubKey = keypair.publicKey.toBase58()
-          const text = "TX sent: jhkjhkjhkjhkj"
-          const signedMsg = signMessage(text)
+          const body = ["TX sent: jhkjhkjhkjhkj"]
+          const signedBody = signBody(body)
 
           await sendMsg({
             node,
@@ -51,11 +52,11 @@ const main = async () => {
             replyTo: topic,
             state: 'Cypher',
             pubKey,
-            signedMsg,
-            msg: text
+            signedBody,
+            body
           })
         } catch (e) {
-          console.error('Error sending message:', e);
+          console.error('Error sending body:', e);
         }
         break;
       default:
@@ -69,7 +70,7 @@ const main = async () => {
     try {
     switch (msg.state) {
       case "Handshake":
-        // Create a random topic to receive messages
+        // Create a random topic to receive bodys
         const privTopic = randomTopic();
 
         await subscribeTo(node, privTopic, flowFn);
@@ -79,7 +80,7 @@ const main = async () => {
           topic: msg.replyTo,
           replyTo: privTopic,
           state: 'ACK',
-          msg: "whatever"
+          body: ["whatever"]
         })
         break;
       default:
@@ -87,7 +88,7 @@ const main = async () => {
         break;
     }
     } catch (e) {
-      console.error('Error subscribe message:', e);
+      console.error('Error subscribe body:', e);
     }
 
   });
