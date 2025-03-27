@@ -8,6 +8,8 @@ import {
   bytesToUtf8,
   utf8ToBytes,
   Protocols,
+  LightNode,
+  SubscribeResult,
 } from "@waku/sdk";
 import { wakuPeerExchangeDiscovery } from "@waku/discovery";
 import { derivePubsubTopicsFromNetworkConfig } from "@waku/utils"
@@ -99,28 +101,11 @@ export const sendMsg = async ({
 }
 
 
-export const subscribeTo = async (node, topic, fn) => {
+export const subscribeTo = async (node: LightNode, topic, fn) => {
   let error, subscription
   // @ts-ignore
   try {
-    ({ error, subscription } = await node.filter.createSubscription({
-      contentTopics: [topic] ,
-      clusterId: 42,
-      shards: [0],
-    }));
-  } catch (e) {
-    console.error('Error creating subscription:', e);
-    process.exit(1);
-  }
-
-  if (error) {
-    console.error("Error creating subscription", error);
-    process.exit(1);
-  }
-
-  await subscription.subscribe(
-    [createDecoder(topic, networkConfig)],
-    async (wakuMessage) => {
+    const subResult:SubscribeResult = await node.filter.subscribe([createDecoder(topic, {clusterId: networkConfig.clusterId, shard: networkConfig.shards[0]})], async (wakuMessage) => {
       try {
         const msg = ChatMessage.decode(wakuMessage.payload);
 
@@ -141,11 +126,27 @@ export const subscribeTo = async (node, topic, fn) => {
       } catch (e) {
         console.error('Error decoding message:', e);
       }
+    })
+
+    if (subResult.error) {
+      throw new Error(subResult.error)
     }
-  );
+
+    subscription = subResult.subscription
+  } catch (e) {
+    console.error('Error creating subscription:', e);
+    process.exit(1);
+  }
+
+  if (error) {
+    console.error("Error creating subscription", error);
+    process.exit(1);
+  }
+  return subscription
+};
 
   // "Ensure" the subscription is ready
-  for ( let i = 0; i < 20; i++ )  {
+/*  for ( let i = 0; i < 20; i++ )  {
     try {
       await subscription.ping();
       break;
@@ -159,13 +160,15 @@ export const subscribeTo = async (node, topic, fn) => {
     }
   }
 
-  return subscription;
-}
+  ;
+}*/
 
 const peers = [
-  '/ip4/0.0.0.0/tcp/30304/p2p/16Uiu2HAkyV54ctToZ6mwKP3YrsrrqCqkbqBua9x7MhbHaBrfcgju'
+  //'/ip4/0.0.0.0/tcp/30304/p2p/16Uiu2HAkyV54ctToZ6mwKP3YrsrrqCqkbqBua9x7MhbHaBrfcgju',
+  '/dns4/waku-test.bloxy.one/tcp/30304/p2p/16Uiu2HAmSZbDB7CusdRhgkD81VssRjQV5ZH13FbzCGcdnbbh6VwZ',
 ]
 export const startNode = async () => {
+  console.log("Network config!!!", networkConfig)
   const node = await createLightNode({
     defaultBootstrap: false,
     libp2p: { transports: [tcp()],
@@ -173,7 +176,8 @@ export const startNode = async () => {
       //   wakuPeerExchangeDiscovery(derivePubsubTopicsFromNetworkConfig(networkConfig))
       // ]
     },
-    networkConfig
+    networkConfig: networkConfig,
+    
     // bootstrapPeers: peers,
     // peerDiscovery: [
     //   wakuDnsDiscovery(
