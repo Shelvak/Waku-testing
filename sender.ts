@@ -46,11 +46,12 @@ const main = async () => {
       switch (msg.state) {
         case "ACK":
           if (ack) { // already working with some other subscriber
-          await sendMsg({
-              node: node,
-              topic: msg.replyTo,
-              state: 'Taken',
-            });
+          // await sendMsg({
+          //     node: node,
+          //     topic: msg.replyTo,
+          //     state: 'Taken',
+          //     body: ''
+          //   });
           } else {
             ack = true
             await sendProofs(node, msg.replyTo, topic);

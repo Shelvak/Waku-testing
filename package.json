@@ -6,7 +6,7 @@
     "@solana/web3.js": "^1.98.0",
     "@waku/dns-discovery": "^0.0.21",
     "@waku/message-hash": "^0.1.16",
-    "@waku/sdk": "0.0.30-9f1d8ca.0",
+    "@waku/sdk": "0.0.30",
     "bs58": "^6.0.0",
     "ethers": "^6.13.5",
     "nostr-tools": "^2.10.4",

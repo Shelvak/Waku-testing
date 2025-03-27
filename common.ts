@@ -2,13 +2,15 @@ import { randomBytes } from "node:crypto";
 import protobuf from "protobufjs";
 import {
   createLightNode,
-  waitForRemotePeer,
+  // waitForRemotePeer,
   createDecoder,
   createEncoder,
   bytesToUtf8,
   utf8ToBytes,
   Protocols,
 } from "@waku/sdk";
+import { wakuPeerExchangeDiscovery } from "@waku/discovery";
+import { derivePubsubTopicsFromNetworkConfig } from "@waku/utils"
 
 import { tcp } from "@libp2p/tcp";
 // import { enrTree, wakuDnsDiscovery } from "@waku/dns-discovery";
@@ -17,6 +19,13 @@ export const CONTENT_TOPIC   = "/coffer/0.1/PLACEHOLDER/proto";
 export const HANDSHAKE_TOPIC = CONTENT_TOPIC.replace('PLACEHOLDER', 'handshake');
 
 export const sleep = async (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const networkConfig = {
+  clusterId: 42,
+  shards: [0],
+  // peerExchange: true,
+}
+
 
 const to_bs58 = (pubKey) => {
   if (!pubKey) return 'unknown';
@@ -76,7 +85,10 @@ export const sendMsg = async ({
   });
 
   await node.lightPush.send(
-    createEncoder({contentTopic: topic}), // ephemeral: true to not store
+    createEncoder({
+      contentTopic: topic,
+      pubsubTopicShardInfo: networkConfig
+    }), // ephemeral: true to not store
     { payload: ChatMessage.encode(protoMessage).finish() }
   );
 
@@ -92,9 +104,10 @@ export const subscribeTo = async (node, topic, fn) => {
   // @ts-ignore
   try {
     ({ error, subscription } = await node.filter.createSubscription({
-      forceUseAllPeers: true,
-      maxAttempts: 10,
-      contentTopics: [topic] }));
+      contentTopics: [topic] ,
+      clusterId: 42,
+      shards: [0],
+    }));
   } catch (e) {
     console.error('Error creating subscription:', e);
     process.exit(1);
@@ -106,7 +119,7 @@ export const subscribeTo = async (node, topic, fn) => {
   }
 
   await subscription.subscribe(
-    [createDecoder(topic)],
+    [createDecoder(topic, networkConfig)],
     async (wakuMessage) => {
       try {
         const msg = ChatMessage.decode(wakuMessage.payload);
@@ -150,15 +163,17 @@ export const subscribeTo = async (node, topic, fn) => {
 }
 
 const peers = [
-  '/ip4/0.0.0.0/tcp/30304/p2p/16Uiu2HAm6Lp23yeP1fYmGrhLdKbVJknL3KLFkadoXcRov8ZR9KYn',
-  // '/ip4/192.168.0.7/tcp/30304/p2p/16Uiu2HAm6Lp23yeP1fYmGrhLdKbVJknL3KLFkadoXcRov8ZR9KYn',
-  // "/ip4/191.81.198.0/tcp/30304/p2p/16Uiu2HAmT3qYSsKRzAzAMcYJnmWgKhtVD8d26chNAS5soHBbxAro"
-  // "/ip4/0.0.0.0/tcp/60002/ws/p2p/16Uiu2HAm6Lp23yeP1fYmGrhLdKbVJknL3KLFkadoXcRov8ZR9KYn",
+  '/ip4/0.0.0.0/tcp/30304/p2p/16Uiu2HAkyV54ctToZ6mwKP3YrsrrqCqkbqBua9x7MhbHaBrfcgju'
 ]
-
 export const startNode = async () => {
   const node = await createLightNode({
-    libp2p: { transports: [tcp()] }
+    defaultBootstrap: false,
+    libp2p: { transports: [tcp()],
+      // peerDiscovery: [
+      //   wakuPeerExchangeDiscovery(derivePubsubTopicsFromNetworkConfig(networkConfig))
+      // ]
+    },
+    networkConfig
     // bootstrapPeers: peers,
     // peerDiscovery: [
     //   wakuDnsDiscovery(
@@ -174,13 +189,15 @@ export const startNode = async () => {
   });
 
   console.log("Dialing peers")
-  for ( let i = 0; i < 5; i++ )  {
-    try {
-      await node.dial(peers[0]);
-      break
-    } catch (e) {
-      console.log("Error dialing peer " + i, e)
-      await sleep(1000)
+  for (let peer of peers) {
+    for ( let i = 0; i < 5; i++ )  {
+      try {
+        await node.dial(peer);
+        break
+      } catch (e) {
+        console.log("Error dialing peer " + i, e)
+        await sleep(1000)
+      }
     }
   }
   // const promises = peers.map(multiaddr => node.dial(multiaddr));
