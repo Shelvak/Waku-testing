@@ -1,18 +1,23 @@
+import fs from "fs";
 import { randomBytes } from "node:crypto";
 import protobuf from "protobufjs";
 import {
   createLightNode,
   // waitForRemotePeer,
-  createDecoder,
-  createEncoder,
+  // createDecoder,
+  // createEncoder,
   bytesToUtf8,
   utf8ToBytes,
   Protocols,
   LightNode,
   SubscribeResult,
 } from "@waku/sdk";
+import { createEncoder, createDecoder } from "@waku/message-encryption/ecies";
+import { bytesToHex, hexToBytes } from "@waku/utils/bytes";
+
 import { wakuPeerExchangeDiscovery } from "@waku/discovery";
 import { derivePubsubTopicsFromNetworkConfig } from "@waku/utils"
+import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 
 import { tcp } from "@libp2p/tcp";
 // import { enrTree, wakuDnsDiscovery } from "@waku/dns-discovery";
@@ -39,6 +44,16 @@ const to_bs58 = (pubKey) => {
   return pubKey;
 }
 
+let privateKey = ''
+try {
+  privateKey = process.env.PRIVATE_KEY || fs.readFileSync('./.testPrivateKey', 'utf8');
+} catch (_e) {
+  privateKey = generatePrivateKey();
+  fs.writeFileSync('./.testPrivateKey', privateKey, 'utf8');
+}
+const account = privateKeyToAccount(privateKey);
+const eciesPrivateKey = hexToBytes(privateKey);
+
 
 // Protobuf bytes => Uint8Array (browser) or Buffer (node)
 // repeated indicates an array of bytes
@@ -55,7 +70,7 @@ export const sendMsg = async ({
   topic,
   replyTo,
   state,
-  pubKey,
+  // pubKey,
   signedBody,
   body,
 }: {
@@ -63,7 +78,7 @@ export const sendMsg = async ({
   topic: string,
   replyTo: string,
   state: string,
-  pubKey?: string,
+  // pubKey: string,
   signedBody?: string,
   body: object
 }) => {
@@ -73,9 +88,11 @@ export const sendMsg = async ({
     state,
     body,
     replyTo,
-    pubKey,
+    // pubKey,
     signedBody,
   })
+
+  const pubKey = account.publicKey;
   try {
   const protoMessage = ChatMessage.create({
     timestamp: Date.now(),
@@ -89,8 +106,10 @@ export const sendMsg = async ({
   await node.lightPush.send(
     createEncoder({
       contentTopic: topic,
-      pubsubTopicShardInfo: networkConfig
-    }), // ephemeral: true to not store
+      publicKey: hexToBytes(pubKey), // Public key should be 65bytes secp256k1.publicKey
+      pubsubTopicShardInfo: { clusterId: networkConfig.clusterId, shard: networkConfig.shards[0] },
+      ephemeral: true
+    }),
     { payload: ChatMessage.encode(protoMessage).finish() }
   );
 
@@ -105,7 +124,9 @@ export const subscribeTo = async (node: LightNode, topic, fn) => {
   let error, subscription
   // @ts-ignore
   try {
-    const subResult:SubscribeResult = await node.filter.subscribe([createDecoder(topic, {clusterId: networkConfig.clusterId, shard: networkConfig.shards[0]})], async (wakuMessage) => {
+    const subResult: SubscribeResult = await node.filter.subscribe(
+      [createDecoder(topic, eciesPrivateKey, {clusterId: networkConfig.clusterId, shard: networkConfig.shards[0]})],
+      async (wakuMessage) => {
       try {
         const msg = ChatMessage.decode(wakuMessage.payload);
 
@@ -164,11 +185,12 @@ export const subscribeTo = async (node: LightNode, topic, fn) => {
 }*/
 
 const peers = [
-  //'/ip4/0.0.0.0/tcp/30304/p2p/16Uiu2HAkyV54ctToZ6mwKP3YrsrrqCqkbqBua9x7MhbHaBrfcgju',
-  '/dns4/waku-test.bloxy.one/tcp/30304/p2p/16Uiu2HAmSZbDB7CusdRhgkD81VssRjQV5ZH13FbzCGcdnbbh6VwZ',
+  // '/ip4/0.0.0.0/tcp/30304/p2p/16Uiu2HAm88NMbTS471mza7mA7c18dFxWoTTDVXyec6ithtDazpF8', // default
+  '/ip4/0.0.0.0/tcp/30304/p2p/16Uiu2HAkv4AJDA78daNek6nZDJcS7JXtHbB4VnK3d2gKg4dUTAM6', // Cluster 42
+  // '/dns4/waku-test.bloxy.one/tcp/30304/p2p/16Uiu2HAmSZbDB7CusdRhgkD81VssRjQV5ZH13FbzCGcdnbbh6VwZ',
 ]
 export const startNode = async () => {
-  console.log("Network config!!!", networkConfig)
+  // console.log("Network config!!!", networkConfig)
   const node = await createLightNode({
     defaultBootstrap: false,
     libp2p: { transports: [tcp()],
@@ -177,7 +199,7 @@ export const startNode = async () => {
       // ]
     },
     networkConfig: networkConfig,
-    
+
     // bootstrapPeers: peers,
     // peerDiscovery: [
     //   wakuDnsDiscovery(

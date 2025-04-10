@@ -42,7 +42,7 @@ const main = async () => {
         // await sendMsg(node, msg.replyTo, topic, 'Error', `TX la comiste`)
 
         try {
-          const pubKey = keypair.publicKey.toBase58()
+          // const pubKey = keypair.publicKey.toBase58()
           const body = ["TX sent: jhkjhkjhkjhkj"]
           const signedBody = signBody(body)
 
@@ -51,7 +51,7 @@ const main = async () => {
             topic: msg.replyTo,
             replyTo: topic,
             state: 'Cypher',
-            pubKey,
+            // pubKey,
             signedBody,
             body
           })
