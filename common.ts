@@ -95,26 +95,27 @@ export const sendMsg = async ({
 
   const pubKey = account.publicKey;
   try {
-  const protoMessage = ChatMessage.create({
-    timestamp: Date.now(),
-    body: utf8ToBytes(JSON.stringify(body)),
-    replyTo: utf8ToBytes(replyTo),
-    state,
-    pubKey: pubKey ? utf8ToBytes(pubKey) : undefined,
-    signedBody: signedBody ? utf8ToBytes(signedBody) : undefined,
-  });
+    const ts = Date.now();
+    const protoMessage = ChatMessage.create({
+      timestamp: ts,
+      body: utf8ToBytes(JSON.stringify(body)),
+      replyTo: utf8ToBytes(replyTo),
+      state,
+      pubKey: pubKey ? utf8ToBytes(pubKey) : undefined,
+      signedBody: signedBody ? utf8ToBytes(signedBody) : undefined,
+    });
 
-  await node.lightPush.send(
-    createEncoder({
-      contentTopic: topic,
-      publicKey: hexToBytes(pubKey), // Public key should be 65bytes secp256k1.publicKey
-      pubsubTopicShardInfo: { clusterId: networkConfig.clusterId, shard: networkConfig.shards[0] },
-      ephemeral: true
-    }),
-    { payload: ChatMessage.encode(protoMessage).finish() }
-  );
+    await node.lightPush.send(
+      createEncoder({
+        contentTopic: topic,
+        publicKey: hexToBytes(pubKey), // Public key should be 65bytes secp256k1.publicKey
+        pubsubTopicShardInfo: { clusterId: networkConfig.clusterId, shard: networkConfig.shards[0] },
+        ephemeral: true
+      }),
+      { payload: ChatMessage.encode(protoMessage).finish(), timestamp: ts }
+    );
 
-  console.log("Message sent!");
+    console.log("Message sent!");
   } catch (e) {
     console.error('Error sending message:', e);
   }
