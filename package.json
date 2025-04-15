@@ -2,10 +2,20 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@solana/web3.js": "^1.95.3",
+    "@libp2p/tcp": "^10.0.15",
+    "@solana/web3.js": "^1.98.0",
+    "@waku/dns-discovery": "^0.0.21",
+    "@waku/message-encryption": "^0.0.32",
     "@waku/message-hash": "^0.1.16",
-    "@waku/sdk": "0.0.29-2fe9875.0",
+    "@waku/sdk": "0.0.30",
+    "@waku/utils": "^0.0.22",
+    "bs58": "^6.0.0",
+    "ethers": "^6.13.5",
+    "nostr-tools": "^2.10.4",
     "protobufjs": "^7.4.0",
-    "tsx": "^4.19.1"
+    "tsx": "^4.19.1",
+    "tweetnacl": "^1.0.3",
+    "viem": "^2.26.2",
+    "ws": "^8.18.0"
   }
 }
