@@ -13,6 +13,7 @@ import {
   SubscribeResult,
 } from "@waku/sdk";
 import { createEncoder, createDecoder } from "@waku/message-encryption/ecies";
+import { keccak256 } from "@waku/message-encryption/crypto";
 import { bytesToHex, hexToBytes } from "@waku/utils/bytes";
 
 import { wakuPeerExchangeDiscovery } from "@waku/discovery";
@@ -119,6 +120,31 @@ export const sendMsg = async ({
   }
 }
 
+const msgHashes = []
+const checkDuplicate = (wakuMessage: any, msg: any): boolean => {
+  const input = new Uint8Array([
+    // Filter by topic
+    ...utf8ToBytes(wakuMessage.contentTopic),
+    // Decrypted body (already in uint8array)
+    ...msg.body,
+    // Decrypted timestamp, because the wakuMessage.timestamp changes
+    ...utf8ToBytes(msg.timestamp.toString()),
+  ])
+  const hash = bytesToHex(keccak256(input))
+
+  if (msgHashes.indexOf(hash) >= 0) {
+    console.debug("Message already delivered", hash)
+    console.debug(`Waku ts: ${wakuMessage.timestamp.getTime()} Msg ts: ${msg.timestamp}`);
+    return true
+  }
+  if (msgHashes.length > 2000) {
+    console.debug("Dropping old messages from hash cache")
+    msgHashes.slice(hash.length - 500, hash.length)
+  }
+  msgHashes.push(hash)
+  return false
+}
+
 
 export const subscribeTo = async (node: LightNode, topic, fn) => {
   let error, subscription
@@ -129,6 +155,8 @@ export const subscribeTo = async (node: LightNode, topic, fn) => {
       async (wakuMessage) => {
       try {
         const msg = ChatMessage.decode(wakuMessage.payload);
+
+        if (checkDuplicate(wakuMessage, msg)) return
 
         msg.body = JSON.parse(bytesToUtf8(msg.body))
 
